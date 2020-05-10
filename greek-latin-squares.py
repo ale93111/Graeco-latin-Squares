@@ -5,7 +5,6 @@ Created on Fri May  8 18:21:07 2020
 @author: alessandro
 """
 
-
 from matplotlib.patches import Circle
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -90,41 +89,40 @@ B = np.zeros((m,m))
 S = np.zeros(m)
 R = np.zeros(m)
 
+new_cmap = rand_cmap(m+1, type='bright', first_color_black=True, last_color_black=False, verbose=False)
+
 #print("There are "+str(math.factorial(m))+" latin squares")
 #print("There are "+str(math.factorial(m+1)-math.factorial(m))+" graeco latin squares")
 #%%
+p = np.random.randint(m) + 1
 
-for i,l in enumerate(range(1,m+1)):
-    S[i] = l - 1
+S = np.arange(m)
+np.random.shuffle(S)
 
-for i,l in enumerate(range(1,m+1)):
-    R[i] = m + l -1
+R = (p-S)%m
 
 #%%
 
 for k in range(m):
    for l in range(m):
-       A[k,l] = ( S[l] + (k - 1) )% m
-        
+       A[k,l] = ( S[l] + k - 1 )% m    
+       
 for k in range(m):
    for l in range(m):
-       p = 0#S[k] + R[k]
-       B[k,l] = ( p - S[l] + (k - 1) )% m  
+       B[k,l] = ( p - S[l] + k - 1 )% m  
 #%%
-new_cmap = rand_cmap(m+1, type='bright', first_color_black=True, last_color_black=False, verbose=False)
-
 patches=[]
 
 for k in range(m):
    for l in range(m):
-       patches.append(Circle((k, l), radius=0.25,color=new_cmap(B[k,l]/float(m-1))))#cm.magma(B[k,l]/float(m-1))))
+       patches.append(Circle((l, k), radius=0.25,color=new_cmap(B[k,l]/float(m-1))))#cm.magma(B[k,l]/float(m-1))))
 
 fig, ax = plt.subplots(1,figsize=(32,32))
 
 ax.imshow(A,cmap=new_cmap)
 
-for p in patches:
-    ax.add_patch(p)
+for pat in patches:
+    ax.add_patch(pat)
 
 
 plt.savefig("gl-square.jpg",bbox_inches='tight')    
